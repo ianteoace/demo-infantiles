@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
@@ -13,11 +15,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const cormorant = localFont({
-  variable: "--font-cormorant",
-  src: "./fonts/Recia-MediumItalic.woff",
+const melodrama = localFont({
+  variable: "--font-melodrama",
+  src: "./fonts/Melodrama-Medium.woff",
   weight: "500",
-  style: "italic",
+  style: "normal",
 });
 
 const reciaRegular = localFont({
@@ -27,14 +29,16 @@ const reciaRegular = localFont({
   style: "normal",
 });
 
-const shareTitle = "Sofía & Mateo | Invitación Demo";
-const shareDescription = "Modelo demo de invitación web de casamiento";
-const shareImage = {
-  url: "/hero/pareja.jpg",
-  width: 452,
-  height: 678,
-  alt: "Foto principal de Sofía y Mateo",
-};
+const heroImagePath = path.join(process.cwd(), "public", "hero", "infantil.jpg");
+const ogImagePath = path.join(process.cwd(), "public", "og-image.jpg");
+const shareImageUrl = existsSync(heroImagePath)
+  ? "/hero/infantil.jpg"
+  : existsSync(ogImagePath)
+    ? "/og-image.jpg"
+    : undefined;
+
+const shareTitle = "Cumple de Emma | Invitación Demo";
+const shareDescription = "Modelo demo de invitación web para eventos infantiles";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://demo-invitacion.example"),
@@ -45,7 +49,16 @@ export const metadata: Metadata = {
     description: shareDescription,
     url: "https://demo-invitacion.example",
     siteName: shareTitle,
-    images: [shareImage],
+    images: shareImageUrl
+      ? [
+          {
+            url: shareImageUrl,
+            width: 1200,
+            height: 630,
+            alt: "Cumple de Emma",
+          },
+        ]
+      : [],
     type: "website",
     locale: "es_AR",
   },
@@ -53,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: shareTitle,
     description: shareDescription,
-    images: [shareImage.url],
+    images: shareImageUrl ? [shareImageUrl] : [],
   },
 };
 
@@ -65,7 +78,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${reciaRegular.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${melodrama.variable} ${reciaRegular.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
